@@ -9,7 +9,12 @@ import (
 //if parenthesize is true, each value in mapper is parenthesized before
 //adding it to qry, prefix allows for different statements(like WHERE or VALUES) to be specified
 func withMap(prefix string, mapper map[int]string, parenthesize bool) string {
-	qry := " " + prefix
+	qry := ""
+	if prefix == "," {
+		qry = prefix
+	} else {
+		qry = " " + prefix
+	}
 	keys := make([]int, 0, len(mapper))
 	for k := range mapper {
 		keys = append(keys, k)
