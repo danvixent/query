@@ -33,12 +33,19 @@ func (i *InsertBuilder) Values(values string) *InsertBuilder {
 //Any value for a string colmun should be wrapped in single quotes.
 //Usage example:
 // 		ValuesFromMap(map[int]string{
-// 				0: "'Mrs','Susan','Jerome','+2319057573110'",
-// 				1: "'Mr','George','Thane','+1222922843994'",
-// 				2: "'Miss','Jane','Lilly','+2328145379003'",
+// 				0: "'Mrs'",
+// 				1: "'Susan'",
+// 				2: "'Jerome'",
+//				3: "'+2319057573110'"
 // 		})
 func (i *InsertBuilder) ValuesFromMap(ixToValues map[int]string) *InsertBuilder {
-	i.query += withMap("VALUES", ixToValues, true)
+	i.query += withMap("VALUES", concactValues(ixToValues), true)
+	return i
+}
+
+// ValuesSet adds another value set without adding the VALUES keyword
+func (i *InsertBuilder) ValuesSet(ixToValues map[int]string) *InsertBuilder {
+	i.query += withMap("", concactValues(ixToValues), true)
 	return i
 }
 
