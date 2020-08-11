@@ -40,6 +40,33 @@ func withMap(prefix string, mapper map[int]string, parenthesize bool) string {
 	return qry
 }
 
+// concactValues mutates all values in mapper to a one string,
+// with commas seperating each value.
+// obsolete keys will be deleted and the only the first index
+// will remain
+func concactValues(mapper map[int]string) map[int]string {
+	qry := ""
+	keys := make([]int, 0, len(mapper))
+	for k := range mapper {
+		keys = append(keys, k)
+	}
+	sort.Ints(keys)
+	l := len(keys) - 1
+
+	for ix, key := range keys {
+		value := mapper[key]
+		if ix == l {
+			qry += value
+			break
+		}
+		qry += value + ","
+	}
+	// the idea behind mutating mapperhere is
+	// make the old map eligible for garbage collection
+	mapper = map[int]string{0: qry}
+	return mapper
+}
+
 //withSlice is like withMap but with slices of strings
 func withSlice(prefix string, values []string, parenthesize bool) string {
 	l := len(values) - 1
