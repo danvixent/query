@@ -158,19 +158,19 @@ func TestInsertBuilder_Insert(t *testing.T) {
 	}{
 		{
 			"insert1",
-			"INSERT INTO Person.Contact (Title,FirstName,LastName,PhoneNumber) VALUES('Mrs','Susan','Jerome','+2319057573110'),('Mr','George','Thane','+1222922843994'),('Miss','Jane','Lilly','+2328145379003')",
+			"INSERT INTO Person.Contact (Title,FirstName,LastName,PhoneNumber) VALUES('Mrs','Susan','Jerome','+2319057573110'),('Mr','George','Thane','+1222922843994')",
 			NewInsertBuilder().Insert("Person.Contact").Fields("Title", "FirstName", "LastName", "PhoneNumber").
 				ValuesFromMap(map[int]string{
-					0: "'Mrs','Susan','Jerome','+2319057573110'",
-					1: "'Mr','George','Thane','+1222922843994'",
-					2: "'Miss','Jane','Lilly','+2328145379003'",
-				}).String,
-		},
-		{
-			"insert2",
-			"INSERT INTO Person.Address VALUES('Mrs','Susan','Jerome','+2319057573110')",
-			NewInsertBuilder().Insert("Person.Address").
-				Values("'Mrs','Susan','Jerome','+2319057573110'").String,
+					0: "'Mrs'",
+					1: "'Susan'",
+					2: "'Jerome'",
+					3: "'+2319057573110'",
+				}).ValuesSet(map[int]string{
+				0: "'Mr'",
+				1: "'George'",
+				2: "'Thane'",
+				3: "'+1222922843994'",
+			}).String,
 		},
 		{
 			"insert3",
