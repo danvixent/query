@@ -22,13 +22,6 @@ func (i *InsertBuilder) Fields(fields ...string) *InsertBuilder {
 	return i
 }
 
-//Values adds a set of values for each corresponding column to the builder's query.
-//Any value for a string colmun should be wrapped in single quotes.
-func (i *InsertBuilder) Values(values string) *InsertBuilder {
-	i.query += " VALUES(" + values + ")"
-	return i
-}
-
 //ValuesFromMap adds multiple value groups derived from ixToValues to the builder'query
 //Any value for a string colmun should be wrapped in single quotes.
 //Usage example:
@@ -45,7 +38,7 @@ func (i *InsertBuilder) ValuesFromMap(ixToValues map[int]string) *InsertBuilder 
 
 // ValuesSet adds another value set without adding the VALUES keyword
 func (i *InsertBuilder) ValuesSet(ixToValues map[int]string) *InsertBuilder {
-	i.query += withMap("", concactValues(ixToValues), true)
+	i.query += withMap(",", concactValues(ixToValues), true)
 	return i
 }
 
