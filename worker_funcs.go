@@ -80,12 +80,11 @@ func whereIn(field string, values ...interface{}) string {
 	qry := " WHERE " + field + " IN("
 	l := len(values) - 1
 	for ix, v := range values {
-		value := stringify(v)
 		if ix == l {
-			qry += value
+			qry += stringify(v)
 			break
 		}
-		qry += value + ","
+		qry += stringify(v) + ","
 	}
 	qry += ")"
 	return qry
