@@ -88,8 +88,8 @@ func (j *JoinBuilder) WhereWithMap(ixToCond map[int]interface{}) *JoinBuilder {
 }
 
 //WhereFieldIn adds a WHERE clause along with an IN operator
-func (j *JoinBuilder) WhereFieldIn(field string, values []string) *JoinBuilder {
-	j.s.WhereFieldIn(field, values)
+func (j *JoinBuilder) WhereFieldIn(field string, values ...interface{}) *JoinBuilder {
+	j.s.WhereFieldIn(field, values...)
 	return j
 }
 

@@ -55,7 +55,7 @@ func (s *SelectBuilder) WhereWithMap(ixToCond map[int]interface{}) *SelectBuilde
 
 //WhereFieldIn adds a WHERE clause along with an IN operator
 func (s *SelectBuilder) WhereFieldIn(field string, values ...interface{}) *SelectBuilder {
-	s.query += whereIn(field, values)
+	s.query += whereIn(field, values...)
 	return s
 }
 
