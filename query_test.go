@@ -87,7 +87,7 @@ func TestSelectBuilder_Select(t *testing.T) {
 		{
 			"select5",
 			"SELECT * FROM Stock.Product WHERE ProductID IN(2,44,22,11,42,53)",
-			NewSelectBuilder().SelectAll("Stock.Product").WhereFieldIn("ProductID", []string{"2", "44", "22", "11", "42", "53"}).String,
+			NewSelectBuilder().SelectAll("Stock.Product").WhereFieldIn("ProductID", "2", "44", "22", "11", "42", "53").String,
 		},
 	}
 	for _, tt := range tests {
@@ -138,7 +138,7 @@ func TestJoinBuilder_Join(t *testing.T) {
 		{
 			"join5",
 			"SELECT * FROM Sales.OrderDetail WHERE OrderID IN(32,76,33,44)",
-			NewJoinBuilder().SelectAll("Sales.OrderDetail").WhereFieldIn("OrderID", []string{"32", "76", "33", "44"}).String,
+			NewJoinBuilder().SelectAll("Sales.OrderDetail").WhereFieldIn("OrderID", "32", "76", "33", "44").String,
 		},
 	}
 	for _, tt := range tests {
