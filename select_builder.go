@@ -12,7 +12,7 @@ func NewSelectBuilder() *SelectBuilder {
 
 //Select adds a select statement to the builder's query
 func (s *SelectBuilder) Select(fields ...string) *SelectBuilder {
-	s.query = addFields("SELECT", false, fields...)
+	s.query = addFields("SELECT", false, toInterface(fields...)...)
 	return s
 }
 
@@ -48,13 +48,13 @@ func (s *SelectBuilder) Where(condition string) *SelectBuilder {
 //			0: "CategoryID=3 OR",
 //			1: "BarcodeID=22",
 //	})
-func (s *SelectBuilder) WhereWithMap(ixToCond map[int]string) *SelectBuilder {
+func (s *SelectBuilder) WhereWithMap(ixToCond map[int]interface{}) *SelectBuilder {
 	s.query += withMap("WHERE", ixToCond, false)
 	return s
 }
 
 //WhereFieldIn adds a WHERE clause along with an IN operator
-func (s *SelectBuilder) WhereFieldIn(field string, values []string) *SelectBuilder {
+func (s *SelectBuilder) WhereFieldIn(field string, values ...interface{}) *SelectBuilder {
 	s.query += whereIn(field, values)
 	return s
 }
@@ -113,7 +113,7 @@ func (s *SelectBuilder) Desc() *SelectBuilder {
 
 //Distinct adds a DISTINCT clause the builder's query
 func (s *SelectBuilder) Distinct(fields ...string) *SelectBuilder {
-	s.query += addFields("DISTINCT", false, fields...)
+	s.query += addFields("DISTINCT", false, toInterface(fields...)...)
 	return s
 }
 

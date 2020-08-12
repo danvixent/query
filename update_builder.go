@@ -35,7 +35,7 @@ func (u *UpdateBuilder) Set(field string) *UpdateBuilder {
 //			0: "FirstName='Daniel'",
 //			1: "LastName='Jamie'",
 //	})
-func (u *UpdateBuilder) SetFromMap(ixToField map[int]string) *UpdateBuilder {
+func (u *UpdateBuilder) SetFromMap(ixToField map[int]interface{}) *UpdateBuilder {
 	u.query += withMap("SET", ixToField, false)
 	return u
 }
@@ -56,13 +56,13 @@ func (u *UpdateBuilder) Where(condition string) *UpdateBuilder {
 //			0: "CategoryID=3 OR",
 //			1: "BarcodeID=22",
 //	})
-func (u *UpdateBuilder) WhereWithMap(ixToCond map[int]string) *UpdateBuilder {
+func (u *UpdateBuilder) WhereWithMap(ixToCond map[int]interface{}) *UpdateBuilder {
 	u.query += withMap("WHERE", ixToCond, false)
 	return u
 }
 
 //ReturnFromInserted selects fields from the temporary inserted table
-func (u *UpdateBuilder) ReturnFromInserted(fields ...string) *UpdateBuilder {
+func (u *UpdateBuilder) ReturnFromInserted(fields ...interface{}) *UpdateBuilder {
 	u.query += " RETURNING" + addFields("", false, fields...)
 	return u
 }

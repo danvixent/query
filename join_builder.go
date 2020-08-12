@@ -82,7 +82,7 @@ func (j *JoinBuilder) Where(condition string) *JoinBuilder {
 //			0: "CategoryID=3 OR",
 //			1: "BarcodeID=22",
 //	})
-func (j *JoinBuilder) WhereWithMap(ixToCond map[int]string) *JoinBuilder {
+func (j *JoinBuilder) WhereWithMap(ixToCond map[int]interface{}) *JoinBuilder {
 	j.s.WhereWithMap(ixToCond)
 	return j
 }

@@ -1,6 +1,7 @@
 package query
 
 import (
+	"log"
 	"sort"
 	"strconv"
 )
@@ -8,7 +9,7 @@ import (
 //withMap returns a string composed of values from mapper
 //if parenthesize is true, each value in mapper is parenthesized before
 //adding it to qry, prefix allows for different statements(like WHERE or VALUES) to be specified
-func withMap(prefix string, mapper map[int]string, parenthesize bool) string {
+func withMap(prefix string, mapper map[int]interface{}, parenthesize bool) string {
 	qry := ""
 	if prefix == "," {
 		qry = prefix
@@ -24,7 +25,8 @@ func withMap(prefix string, mapper map[int]string, parenthesize bool) string {
 
 	if parenthesize {
 		for ix, key := range keys {
-			value := mapper[key]
+			v := mapper[key]
+			value := stringify(v)
 			if ix == l {
 				qry += "(" + value + ")"
 				break
@@ -35,7 +37,8 @@ func withMap(prefix string, mapper map[int]string, parenthesize bool) string {
 	}
 
 	for ix, key := range keys {
-		value := mapper[key]
+		v := mapper[key]
+		value := stringify(v)
 		if ix == l {
 			qry += " " + value
 			break
@@ -49,7 +52,8 @@ func withMap(prefix string, mapper map[int]string, parenthesize bool) string {
 // with commas seperating each value.
 // obsolete keys will be deleted and the only the first index
 // will remain
-func concactValues(mapper map[int]string) map[int]string {
+// mapper only supports pointers to int,uint types and the string data type.
+func concactValues(mapper map[int]interface{}) map[int]interface{} {
 	qry := ""
 	keys := make([]int, 0, len(mapper))
 	for k := range mapper {
@@ -59,51 +63,24 @@ func concactValues(mapper map[int]string) map[int]string {
 	l := len(keys) - 1
 
 	for ix, key := range keys {
-		value := mapper[key]
+		v := mapper[key]
+		value := stringify(v)
 		if ix == l {
 			qry += value
 			break
 		}
 		qry += value + ","
 	}
-	// the idea behind mutating mapperhere is
-	// make the old map eligible for garbage collection
-	mapper = map[int]string{0: qry}
-	return mapper
-}
-
-//withSlice is like withMap but with slices of strings
-func withSlice(prefix string, values []string, parenthesize bool) string {
-	l := len(values) - 1
-	qry := " " + prefix
-
-	if parenthesize {
-		for ix, value := range values {
-			if ix == l {
-				qry += "(" + value + ")"
-				break
-			}
-			qry += "(" + value + "),"
-		}
-		return qry
-	}
-
-	for ix, value := range values {
-		if ix == l {
-			qry += " " + value
-			break
-		}
-		qry += " " + value
-	}
-	return qry
+	return map[int]interface{}{0: qry}
 }
 
 //whereIn adds a WHERE clause along with IN keyword with values derived from
 //the values parameter
-func whereIn(field string, values []string) string {
+func whereIn(field string, values ...interface{}) string {
 	qry := " WHERE " + field + " IN("
 	l := len(values) - 1
-	for ix, value := range values {
+	for ix, v := range values {
+		value := stringify(v)
 		if ix == l {
 			qry += value
 			break
@@ -116,27 +93,28 @@ func whereIn(field string, values []string) string {
 
 //addFields adds the values in fields to qry
 //if  parenthesize is true prefix isn't added
-func addFields(prefix string, parenthesize bool, fields ...string) string {
+func addFields(prefix string, parenthesize bool, fields ...interface{}) string {
+	l := len(fields) - 1
 	if parenthesize {
 		qry := " ("
-		for i, field := range fields {
-			if i == len(fields)-1 {
-				qry += field
+		for i, v := range fields {
+			if i == l {
+				qry += stringify(v)
 				break
 			}
-			qry += field + ","
+			qry += stringify(v) + ","
 		}
 		qry += ")"
 		return qry
 	}
 
 	qry := prefix + " "
-	for i, field := range fields {
-		if i == len(fields)-1 {
-			qry += field
+	for i, v := range fields {
+		if i == l {
+			qry += stringify(v)
 			break
 		}
-		qry += field + ","
+		qry += stringify(v) + ","
 	}
 	return qry
 }
@@ -166,4 +144,45 @@ func and(cond string) string {
 func or(cond string) string {
 	qry := " OR " + cond
 	return qry
+}
+
+func toInterface(values ...string) []interface{} {
+	v := make([]interface{}, 0, len(values))
+	for i := range values {
+		v = append(v, &values[i])
+	}
+	return v
+}
+
+//stringify converts any *int,*uint type to its string equivalent
+//if a non-pointer type is passed, an empty string is returned
+func stringify(i interface{}) string {
+	switch i.(type) {
+	case *int32:
+		return strconv.FormatInt(int64(*i.(*int32)), 10)
+	case *int:
+		return strconv.Itoa(*i.(*int))
+	case *string:
+		return *i.(*string)
+	case string:
+		return i.(string)
+	case *int64:
+		return strconv.FormatInt(*i.(*int64), 10)
+	case *int8:
+		return strconv.Itoa(int(*i.(*int8)))
+	case *int16:
+		return strconv.Itoa(int(*i.(*int16)))
+	case *uint:
+		return strconv.FormatUint(uint64(*i.(*uint)), 10)
+	case *uint8:
+		return strconv.FormatUint(uint64(*i.(*uint8)), 10)
+	case *uint16:
+		return strconv.FormatUint(uint64(*i.(*uint16)), 10)
+	case *uint32:
+		return strconv.FormatUint(uint64(*i.(*uint32)), 10)
+	case *uint64:
+		return strconv.FormatUint(uint64(*i.(*uint64)), 10)
+	}
+	log.Printf("WARNING: non-pointer int,uint type passed to stringify")
+	return ""
 }

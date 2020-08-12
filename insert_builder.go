@@ -18,14 +18,14 @@ func (i *InsertBuilder) Insert(table string) *InsertBuilder {
 
 //Fields adds the fields to be inserted to the builder's query
 func (i *InsertBuilder) Fields(fields ...string) *InsertBuilder {
-	i.query += addFields("", true, fields...)
+	i.query += addFields("", true, toInterface(fields...)...)
 	return i
 }
 
 //Values adds a set of values for each corresponding column to the builder's query.
 //Any value for a string colmun should be wrapped in single quotes.
-func (i *InsertBuilder) Values(values string) *InsertBuilder {
-	i.query += " VALUES(" + values + ")"
+func (i *InsertBuilder) Values(values ...interface{}) *InsertBuilder {
+	i.query += addFields("VALUES", true, values...)
 	return i
 }
 
@@ -38,28 +38,19 @@ func (i *InsertBuilder) Values(values string) *InsertBuilder {
 // 				2: "'Jerome'",
 //				3: "'+2319057573110'"
 // 		})
-func (i *InsertBuilder) ValuesFromMap(ixToValues map[int]string) *InsertBuilder {
+func (i *InsertBuilder) ValuesFromMap(ixToValues map[int]interface{}) *InsertBuilder {
 	i.query += withMap("VALUES", concactValues(ixToValues), true)
 	return i
 }
 
 // ValuesSet adds another value set without adding the VALUES keyword
-func (i *InsertBuilder) ValuesSet(ixToValues map[int]string) *InsertBuilder {
+func (i *InsertBuilder) ValuesSet(ixToValues map[int]interface{}) *InsertBuilder {
 	i.query += withMap(",", concactValues(ixToValues), true)
 	return i
 }
 
-//ValuesFromSlice adds multiple value groups derived from values to the builder'query
-//Any value for a string colmun should be wrapped in single quotes.
-//Usage example:
-// ValuesFromSlice([]string{"'Mr','Jamie','Lannister','+13244266775'", "'Miss','Jane','Lenard','+4435356906'"}
-func (i *InsertBuilder) ValuesFromSlice(values []string) *InsertBuilder {
-	i.query += withSlice("VALUES", values, true)
-	return i
-}
-
 //ReturnFromInserted selects fields from the temporary inserted table
-func (i *InsertBuilder) ReturnFromInserted(fields ...string) *InsertBuilder {
+func (i *InsertBuilder) ReturnFromInserted(fields ...interface{}) *InsertBuilder {
 	i.query += " RETURNING" + addFields("", false, fields...)
 	return i
 }

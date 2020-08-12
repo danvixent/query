@@ -28,7 +28,7 @@ func (d *DeleteBuilder) Where(condition string) *DeleteBuilder {
 //derived from ixToCond which should map integers(allows for proper ordering)
 //to conditions desired to be met.
 //You should use consecutive integers starting from zero.
-func (d *DeleteBuilder) WhereWithMap(ixToCond map[int]string) *DeleteBuilder {
+func (d *DeleteBuilder) WhereWithMap(ixToCond map[int]interface{}) *DeleteBuilder {
 	d.query += withMap("WHERE", ixToCond, false)
 	return d
 }
