@@ -24,7 +24,7 @@ func TestUpdateBuilder_Update(t *testing.T) {
 			"update3",
 			"UPDATE Stock.Product SET ProductName='Pakgen Bulbs' WHERE CategoryID=3 OR BarcodeID=22",
 			NewUpdateBuilder().Update("Stock.Product").Set("ProductName='Pakgen Bulbs'").
-				WhereWithMap(map[int]string{
+				WhereWithMap(map[int]interface{}{
 					0: "CategoryID=3 OR",
 					1: "BarcodeID=22",
 				}).String,
@@ -32,7 +32,7 @@ func TestUpdateBuilder_Update(t *testing.T) {
 		{
 			"update4",
 			"UPDATE Person.Contact SET FirstName='Daniel' LastName='Jamie' WHERE ContactID=1",
-			NewUpdateBuilder().Update("Person.Contact").SetFromMap(map[int]string{
+			NewUpdateBuilder().Update("Person.Contact").SetFromMap(map[int]interface{}{
 				0: "FirstName='Daniel'",
 				1: "LastName='Jamie'",
 			}).Where("ContactID=1").String,
@@ -73,7 +73,7 @@ func TestSelectBuilder_Select(t *testing.T) {
 			"select3",
 			"SELECT OrderID,StoreID,OrderDate,DueDate,TotalAmountDue,PaymentDate,PaymentMethodID FROM Sales.OrderHeader WHERE OrderID>2 AND StoreID<=100 AND DueDate!=11/02/2020",
 			NewSelectBuilder().Select("OrderID", "StoreID", "OrderDate", "DueDate", "TotalAmountDue", "PaymentDate", "PaymentMethodID").
-				From("Sales.OrderHeader").WhereWithMap(map[int]string{
+				From("Sales.OrderHeader").WhereWithMap(map[int]interface{}{
 				0: "OrderID>2 AND",
 				1: "StoreID<=100 AND",
 				2: "DueDate!=11/02/2020",
@@ -112,7 +112,7 @@ func TestJoinBuilder_Join(t *testing.T) {
 				Select("soh.OrderID", "ss.StoreName", "soh.OrderDate", "soh.TotalAmountDue", "soh.DeliveryDate", "soh.PaymentDate", "mpm.PaymentMethod").
 				From("Sales.OrderHeader").As("soh").Join("Sales.Store").As("ss").On("soh.StoreID", "ss.StoreID").
 				Join("Management.PaymentMethods").As("mpm").On("soh.PaymentMethodID", "mpm.PaymentMethodID").
-				WhereWithMap(map[int]string{
+				WhereWithMap(map[int]interface{}{
 					0: "soh.TotalAmountDue>10000 AND",
 					1: "soh.OrderID>22 AND",
 					2: "mpm.PaymentMethod=Cash",
@@ -160,27 +160,17 @@ func TestInsertBuilder_Insert(t *testing.T) {
 			"insert1",
 			"INSERT INTO Person.Contact (Title,FirstName,LastName,PhoneNumber) VALUES('Mrs','Susan','Jerome','+2319057573110'),('Mr','George','Thane','+1222922843994')",
 			NewInsertBuilder().Insert("Person.Contact").Fields("Title", "FirstName", "LastName", "PhoneNumber").
-				ValuesFromMap(map[int]string{
+				ValuesFromMap(map[int]interface{}{
 					0: "'Mrs'",
 					1: "'Susan'",
 					2: "'Jerome'",
 					3: "'+2319057573110'",
-				}).ValuesSet(map[int]string{
+				}).ValuesSet(map[int]interface{}{
 				0: "'Mr'",
 				1: "'George'",
 				2: "'Thane'",
 				3: "'+1222922843994'",
 			}).String,
-		},
-		{
-			"insert3",
-			"INSERT INTO Person.Contact VALUES('Mr','Jamie','Lannister','+13244266775'),('Miss','Jane','Lenard','+4435356906') RETURNING ProductName",
-			NewInsertBuilder().Insert("Person.Contact").ValuesFromSlice([]string{"'Mr','Jamie','Lannister','+13244266775'", "'Miss','Jane','Lenard','+4435356906'"}).ReturnFromInserted("ProductName").String,
-		},
-		{
-			"insert4",
-			"INSERT INTO Person.Contact VALUES('Mr','Jamie','Lannister','+13244266775'),('Miss','Jane','Lenard','+4435356906') RETURNING *",
-			NewInsertBuilder().Insert("Person.Contact").ValuesFromSlice([]string{"'Mr','Jamie','Lannister','+13244266775'", "'Miss','Jane','Lenard','+4435356906'"}).ReturnAllFromInserted().String,
 		},
 	}
 	for _, tt := range tests {
@@ -206,7 +196,7 @@ func TestDeleteBuilder_Delete(t *testing.T) {
 		{
 			"delete2",
 			"DELETE FROM Stock.ProductPrice WHERE ProductID>2 AND PacketUnitPrice>=2000 OR CartonUnitPrice>40000",
-			NewDeleteBuilder().Delete("Stock.ProductPrice").WhereWithMap(map[int]string{
+			NewDeleteBuilder().Delete("Stock.ProductPrice").WhereWithMap(map[int]interface{}{
 				0: "ProductID>2 AND",
 				1: "PacketUnitPrice>=2000 OR",
 				2: "CartonUnitPrice>40000",
