@@ -218,88 +218,147 @@ func TestDeleteBuilder_Delete(t *testing.T) {
 	}
 }
 
-func BenchmarkUpdateBuilder_Update(b *testing.B) {
+var tables = []string{
+	"Person.Address",
+	"Person.Contact",
+	"Sales.Order",
+	"Sales.OrderDetails",
+	"Sales.Store",
+}
 
+var fields = [][]string{
+	{"OrderID", "DueDate", "TotalAmountDue", "PaymentDate", "PaymentMethodID", "DateModified"},
+	{"ContactID", "Title", "FirstName", "LastName", "PhoneNumber", "OrderDate"},
+	{"OrderID", "Title", "DueDate", "PhoneNumber", "PaymentDate", "StoreID"},
+	{"ContactID", "DueDate", "DateAdded", "Quantity", "UnitID", "Unit"},
+	{"SupplierID", "ContactID", "DateAdded", "DateModified", "TotalAmount", "SupplyDate"},
+}
+
+var columns = []string{
+	"OrderID",
+	"DueDate",
+	"TotalAmountDue",
+	"PaymentDate",
+	"PaymentMethodID",
+	"DateModified",
+}
+
+type m = map[int]interface{}
+
+var whereVars = []m{
+	{
+		0: "OrderID>2",
+		1: "StoreID<=100",
+		2: "DueDate!=11/02/2020",
+		3: "FirstName='Gary'",
+	},
+	{
+		0: "ContactID>222",
+		1: "Title='Mrs'",
+		2: "OrderDate>=01/11/2003",
+		3: "TotalAmount>=21213",
+	},
+	{
+		0: "ContactID>222",
+		1: "TotalAmountDue=113333031",
+		2: "LastName='Homie'",
+		3: "TotalAmount>=100091039",
+	},
+	{
+		0: "DetailID=522",
+		1: "DueDate=11/02/1009",
+		2: "OrderDate>=01/11/2003",
+		3: "TotalAmount>=100091039",
+	},
+	{
+		0: "ContactID>222",
+		1: "DueDate=11/33/33031",
+		2: "OrderDate>=01/11/2003",
+		3: "TotalAmount>=100091039",
+	},
+}
+
+var andVars = []string{
+	"ContactID>222",
+	"OrderDate>=01/11/2003",
+	"TotalAmount>=100091039",
+	"StoreID<=100",
+	"DetailID=522",
+}
+
+var fieldIn = [][]interface{}{
+	{"fere", 55, 23, "44", "losers"},
+	{"drake", 21, "jayz", uint(434), uint64(432)},
+	{"H.E.R", 19, "ref", "oppo", 33},
+	{"wiley", 4443, "gabriel", "ERRRW"},
+	{"wrrwr", 1e3, "rrr", 0xafff},
+}
+
+func BenchmarkUpdateBuilder_Update(b *testing.B) {
+	var result *UpdateBuilder
+	for i := 0; i < b.N; i++ {
+		r1 := rand.Intn(5)
+		r2 := rand.Intn(5)
+		result = NewUpdateBuilder().Update(tables[r1]).Set(andVars[r1]).
+			WhereWithMap(whereVars[r2]).And(andVars[r2]).Or(andVars[r2]).
+			SetFromMap(whereVars[r2]).Where(andVars[r2]).
+			ReturnFromInserted(columns[r1]).ReturnAllFromInserted().
+			And(andVars[r2]).Or(andVars[r1])
+	}
+	result.Clear()
 }
 
 func BenchmarkSelectBuilder_Select(b *testing.B) {
-	tables := []string{
-		"Person.Address",
-		"Person.Contact",
-		"Sales.Order",
-		"Sales.OrderDetails",
-		"Sales.Store",
-	}
-
-	fields := [][]string{
-		{"OrderID", "DueDate", "TotalAmountDue", "PaymentDate", "PaymentMethodID", "DateModified"},
-		{"ContactID", "Title", "FirstName", "LastName", "PhoneNumber", "OrderDate"},
-		{"OrderID", "Title", "DueDate", "PhoneNumber", "PaymentDate", "StoreID"},
-		{"ContactID", "DueDate", "DateAdded", "Quantity", "UnitID", "Unit"},
-		{"SupplierID", "ContactID", "DateAdded", "DateModified", "TotalAmount", "SupplyDate"},
-	}
-
-	type m = map[int]interface{}
-	where := []m{
-		{
-			0: "OrderID>2",
-			1: "StoreID<=100",
-			2: "DueDate!=11/02/2020",
-			3: "FirstName='Gary'",
-		},
-		{
-			0: "ContactID>222",
-			1: "Title='Mrs'",
-			2: "OrderDate>=01/11/2003",
-			3: "TotalAmount>=21213",
-		},
-		{
-			0: "ContactID>222",
-			1: "TotalAmountDue=113333031",
-			2: "LastName='Homie'",
-			3: "TotalAmount>=100091039",
-		},
-		{
-			0: "DetailID=522",
-			1: "DueDate=11/02/1009",
-			2: "OrderDate>=01/11/2003",
-			3: "TotalAmount>=100091039",
-		},
-		{
-			0: "ContactID>222",
-			1: "DueDate=11/33/33031",
-			2: "OrderDate>=01/11/2003",
-			3: "TotalAmount>=100091039",
-		},
-	}
-
-	and := []string{
-		"ContactID>222",
-		"OrderDate>=01/11/2003",
-		"TotalAmount>=100091039",
-		"StoreID<=100",
-		"DetailID=522",
-	}
-
 	var result *SelectBuilder
 	for i := 0; i < b.N; i++ {
 		r1 := rand.Intn(5)
 		r2 := rand.Intn(5)
-		result = NewSelectBuilder().Select(fields[r1]...).From(tables[r1]).WhereWithMap(where[r1]).
-			And(and[r2]).Or(and[r2]).Distinct(fields[r2]...).Asc().Desc().GroupBy(and[r1]).SelectAll(tables[r2]).
+		result = NewSelectBuilder().Select(fields[r1]...).From(tables[r1]).WhereWithMap(whereVars[r1]).
+			And(andVars[r2]).Or(andVars[r2]).Distinct(fields[r2]...).Asc().Desc().GroupBy(andVars[r1]).SelectAll(tables[r2]).
 			WhereFieldIn(fields[r1][r2], toInterface(fields[r2]...)...)
 	}
 	result.Clear()
 }
 
 func BenchmarkJoinBuilder_Join(b *testing.B) {
-
+	var result *JoinBuilder
+	var r1 int
+	var r2 int
+	for i := 0; i < b.N; i++ {
+		r1 = rand.Intn(5)
+		r2 = rand.Intn(5)
+		result = NewJoinBuilder().Select(fields[r1]...).From(tables[r2]).WhereWithMap(whereVars[r2]).
+			And(andVars[r2]).Or(andVars[r1]).Distinct(fields[r1]...).Asc().Desc().GroupBy(andVars[r1]).SelectAll(tables[r1]).
+			WhereFieldIn(fields[r2][r1], fieldIn[r1]...).Join(tables[r2])
+	}
+	result.Clear()
 }
 
 func BenchmarkInsertBuilder_Insert(b *testing.B) {
+	var result *InsertBuilder
+	var r1 int
+	var r2 int
+	for i := 0; i < b.N; i++ {
+		r1 = rand.Intn(5)
+		r2 = rand.Intn(5)
+		result = NewInsertBuilder().Insert(tables[r1]).Fields(fields[r2]...).
+			ValuesFromMap(whereVars[r1]).ValuesSet(whereVars[r2]).
+			ReturnFromInserted(fieldIn[r2]...).ReturnAllFromInserted().Values(fieldIn[r2]...)
 
+	}
+	result.Clear()
 }
 
 func BenchmarkDeleteBuilder_Delete(b *testing.B) {
-
+	var result *DeleteBuilder
+	var r1 int
+	var r2 int
+	for i := 0; i < b.N; i++ {
+		r1 = rand.Intn(5)
+		r2 = rand.Intn(5)
+		result = NewDeleteBuilder().Delete(tables[r1]).
+			WhereFieldIn(columns[r1], fieldIn[r2]).WhereWithMap(whereVars[r2]).
+			And(andVars[r1]).Or(andVars[r2]).Where(andVars[r2])
+	}
+	result.Clear()
 }
