@@ -152,6 +152,7 @@ func toInterface(values ...string) []interface{} {
 	return v
 }
 
+// Stringer allows us to avoid importing fmt
 type Stringer interface {
 	String() string
 }
