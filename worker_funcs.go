@@ -5,6 +5,9 @@ import (
 	"strconv"
 )
 
+const quote = 1
+const noquote = 0
+
 //withMap returns a string composed of values from mapper
 //if parenthesize is true, each value in mapper is parenthesized before
 //adding it to qry, prefix allows for different statements(like WHERE or VALUES) to be specified
@@ -25,24 +28,22 @@ func withMap(prefix string, mapper map[int]interface{}, parenthesize bool) strin
 	if parenthesize {
 		for ix, key := range keys {
 			v := mapper[key]
-			value := stringify(v)
 			if ix == l {
-				qry += "(" + value + ")"
+				qry += "(" + stringify(v, false) + ")"
 				break
 			}
-			qry += "(" + value + "),"
+			qry += "(" + stringify(v, false) + "),"
 		}
 		return qry
 	}
 
 	for ix, key := range keys {
 		v := mapper[key]
-		value := stringify(v)
 		if ix == l {
-			qry += " " + value
+			qry += " " + stringify(v, false)
 			break
 		}
-		qry += " " + value
+		qry += " " + stringify(v, false)
 	}
 	return qry
 }
@@ -63,12 +64,11 @@ func concactValues(mapper map[int]interface{}) map[int]interface{} {
 
 	for ix, key := range keys {
 		v := mapper[key]
-		value := stringify(v)
 		if ix == l {
-			qry += value
+			qry += stringify(v, true)
 			break
 		}
-		qry += value + ","
+		qry += stringify(v, true) + ","
 	}
 	return map[int]interface{}{0: qry}
 }
@@ -80,10 +80,10 @@ func whereIn(field string, values ...interface{}) string {
 	l := len(values) - 1
 	for ix, v := range values {
 		if ix == l {
-			qry += stringify(v)
+			qry += stringify(v, true)
 			break
 		}
-		qry += stringify(v) + ","
+		qry += stringify(v, true) + ","
 	}
 	qry += ")"
 	return qry
@@ -97,10 +97,10 @@ func addFields(prefix string, parenthesize bool, fields ...interface{}) string {
 		qry := " ("
 		for i, v := range fields {
 			if i == l {
-				qry += stringify(v)
+				qry += stringify(v, false)
 				break
 			}
-			qry += stringify(v) + ","
+			qry += stringify(v, false) + ","
 		}
 		qry += ")"
 		return qry
@@ -109,10 +109,10 @@ func addFields(prefix string, parenthesize bool, fields ...interface{}) string {
 	qry := prefix + " "
 	for i, v := range fields {
 		if i == l {
-			qry += stringify(v)
+			qry += stringify(v, false)
 			break
 		}
-		qry += stringify(v) + ","
+		qry += stringify(v, false) + ","
 	}
 	return qry
 }
@@ -154,24 +154,30 @@ func toInterface(values ...string) []interface{} {
 
 //stringify converts any *int,*uint type to its string equivalent
 //if a non-pointer type is passed, an empty string is returned
-func stringify(i interface{}) string {
+func stringify(i interface{}, quote bool) string {
 	switch i.(type) {
 	case *int32:
 		return strconv.FormatInt(int64(*i.(*int32)), 10)
 	case *string:
-		return "'" + *i.(*string) + "'"
+		if quote {
+			return "'" + *i.(*string) + "'"
+		}
+		return *i.(*string)
 	case string:
-		return "'" + i.(string) + "'"
+		if quote {
+			return "'" + i.(string) + "'"
+		}
+		return i.(string)
 	case *int:
 		return strconv.Itoa(*i.(*int))
+	case int:
+		return strconv.Itoa(i.(int))
 	case *int64:
 		return strconv.FormatInt(*i.(*int64), 10)
 	case *int8:
 		return strconv.Itoa(int(*i.(*int8)))
 	case *int16:
 		return strconv.Itoa(int(*i.(*int16)))
-	case int:
-		return strconv.Itoa(i.(int))
 	case int64:
 		return strconv.FormatInt(i.(int64), 10)
 	case int8:
