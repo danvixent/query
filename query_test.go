@@ -302,8 +302,7 @@ func BenchmarkUpdateBuilder_Update(b *testing.B) {
 		result = NewUpdateBuilder().Update(tables[r1]).Set(andVars[r1]).
 			WhereWithMap(whereVars[r2]).And(andVars[r2]).Or(andVars[r2]).
 			SetFromMap(whereVars[r2]).Where(andVars[r2]).
-			ReturnFromInserted(fields[r1]...).ReturnAllFromInserted().
-			And(andVars[r2]).Or(andVars[r1])
+			ReturnFromInserted(fields[r1]...).ReturnAllFromInserted()
 	}
 	result.Clear()
 }
