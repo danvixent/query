@@ -33,8 +33,11 @@ func (u *UpdateBuilder) Set(field string) *UpdateBuilder {
 //Usage example:
 //	SetFromMap(map[int]string{
 //			0: "FirstName='Daniel'",
-//			1: "LastName='Jamie'",
+//			 1: "LastName='Jamie'",
 //	})
+//
+// Note that string values in ixToValues beginning with '(' won't be quoted
+// by this method, as they will be assumed to be subqueries.
 func (u *UpdateBuilder) SetFromMap(ixToField map[int]interface{}) *UpdateBuilder {
 	u.query += withMap("SET", ixToField, false)
 	return u

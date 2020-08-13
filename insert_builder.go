@@ -38,12 +38,18 @@ func (i *InsertBuilder) Values(values ...interface{}) *InsertBuilder {
 // 				2: "'Jerome'",
 //				3: "'+2319057573110'"
 // 		})
+//
+// Note that string values in ixToValues beginning with '(' won't be quoted
+// by this method,as they will be assumed to be subqueries.
 func (i *InsertBuilder) ValuesFromMap(ixToValues map[int]interface{}) *InsertBuilder {
 	i.query += withMap("VALUES", concactValues(ixToValues), true)
 	return i
 }
 
 // ValuesSet adds another value set without adding the VALUES keyword
+//
+// Note that string values in ixToValues beginning with '(' won't be quoted
+// by this method, as they will be assumed to be subqueries.
 func (i *InsertBuilder) ValuesSet(ixToValues map[int]interface{}) *InsertBuilder {
 	i.query += withMap(",", concactValues(ixToValues), true)
 	return i
