@@ -152,6 +152,10 @@ func toInterface(values ...string) []interface{} {
 	return v
 }
 
+type Stringer interface {
+	String() string
+}
+
 //stringify converts any *int,*uint type to its string equivalent
 //if a non-pointer type is passed, an empty string is returned
 func stringify(i interface{}, quote bool) string {
@@ -159,15 +163,19 @@ func stringify(i interface{}, quote bool) string {
 	case *int32:
 		return strconv.FormatInt(int64(*i.(*int32)), 10)
 	case *string:
-		if quote {
-			return "'" + *i.(*string) + "'"
+		s := i.(*string)
+		if quote && !((*s)[0] == '(') {
+			return "'" + *s + "'"
 		}
-		return *i.(*string)
+		return *s
 	case string:
-		if quote {
-			return "'" + i.(string) + "'"
+		s := i.(string)
+		if quote && !(s[0] == '(') {
+			return "'" + s + "'"
 		}
-		return i.(string)
+		return s
+	case Stringer:
+		return i.(Stringer).String()
 	case *int:
 		return strconv.Itoa(*i.(*int))
 	case int:
