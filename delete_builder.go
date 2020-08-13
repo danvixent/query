@@ -34,8 +34,8 @@ func (d *DeleteBuilder) WhereWithMap(ixToCond map[int]interface{}) *DeleteBuilde
 }
 
 //WhereFieldIn adds a WHERE clause along with an IN operator
-func (d *DeleteBuilder) WhereFieldIn(field string, values []string) *DeleteBuilder {
-	d.query += whereIn(field, values)
+func (d *DeleteBuilder) WhereFieldIn(field string, values ...interface{}) *DeleteBuilder {
+	d.query += whereIn(field, values...)
 	return d
 }
 
