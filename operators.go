@@ -29,3 +29,15 @@ func LEq(f string, v interface{}) string {
 func SubQry(f string, v interface{ String() string }) string {
 	return f + "=" + v.String()
 }
+
+// Or prepends OR to v
+// this is only intended use with WhereWithMap
+func Or(v string) string {
+	return "OR" + v
+}
+
+// And prepends AND to v
+// this is only intended use with WhereWithMap
+func And(v string) string {
+	return "AND" + v
+}
