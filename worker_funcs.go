@@ -159,9 +159,9 @@ func stringify(i interface{}) string {
 	case *int32:
 		return strconv.FormatInt(int64(*i.(*int32)), 10)
 	case *string:
-		return *i.(*string)
+		return "'" + *i.(*string) + "'"
 	case string:
-		return i.(string)
+		return "'" + i.(string) + "'"
 	case *int:
 		return strconv.Itoa(*i.(*int))
 	case *int64:
