@@ -139,7 +139,7 @@ func TestJoinBuilder_Join(t *testing.T) {
 		{
 			"join5",
 			"SELECT * FROM Sales.OrderDetail WHERE OrderID IN(32,76,33,44)",
-			NewJoinBuilder().SelectAll("Sales.OrderDetail").WhereFieldIn("OrderID", "32", "76", "33", "44").String,
+			NewJoinBuilder().SelectAll("Sales.OrderDetail").WhereFieldIn("OrderID", 32, 76, 33, 44).String,
 		},
 	}
 	for _, tt := range tests {
@@ -162,15 +162,15 @@ func TestInsertBuilder_Insert(t *testing.T) {
 			"INSERT INTO Person.Contact (Title,FirstName,LastName,PhoneNumber) VALUES('Mrs','Susan','Jerome','+2319057573110'),('Mr','George','Thane','+1222922843994')",
 			NewInsertBuilder().Insert("Person.Contact").Fields("Title", "FirstName", "LastName", "PhoneNumber").
 				ValuesFromMap(map[int]interface{}{
-					0: "'Mrs'",
-					1: "'Susan'",
-					2: "'Jerome'",
-					3: "'+2319057573110'",
+					0: "Mrs",
+					1: "Susan",
+					2: "Jerome",
+					3: "+2319057573110",
 				}).ValuesSet(map[int]interface{}{
-				0: "'Mr'",
-				1: "'George'",
-				2: "'Thane'",
-				3: "'+1222922843994'",
+				0: "Mr",
+				1: "George",
+				2: "Thane",
+				3: "+1222922843994",
 			}).String,
 		},
 	}
