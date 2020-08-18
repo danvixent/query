@@ -39,6 +39,18 @@ func (d *DeleteBuilder) WhereFieldIn(field string, values ...interface{}) *Delet
 	return d
 }
 
+//ReturnFromInserted returns the specified field values
+func (d *DeleteBuilder) ReturnFromInserted(fields ...string) *DeleteBuilder {
+	d.query += " RETURNING" + addFields("", false, toInterface(fields...)...)
+	return d
+}
+
+//ReturnAllFromInserted returns all fields
+func (d *DeleteBuilder) ReturnAllFromInserted() *DeleteBuilder {
+	d.query += " RETURNING *"
+	return d
+}
+
 //And is an alternative to WhereWithMap
 //
 //it adds an AND along with the condition specified
