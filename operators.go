@@ -27,7 +27,7 @@ func LEq(f string, v interface{}) string {
 
 // SubQry equates f to a subquery
 func SubQry(f string, v interface{ String() string }) string {
-	return f + "=" + v.String()
+	return f + "=(" + v.String() + ")"
 }
 
 // Or prepends OR to v
