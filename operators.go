@@ -33,11 +33,11 @@ func SubQry(f string, v interface{ String() string }) string {
 // Or prepends OR to v
 // this is only intended use with WhereWithMap
 func Or(v string) string {
-	return "OR" + v
+	return "OR " + v
 }
 
 // And prepends AND to v
 // this is only intended use with WhereWithMap
 func And(v string) string {
-	return "AND" + v
+	return "AND " + v
 }
