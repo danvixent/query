@@ -20,6 +20,12 @@ func (j *JoinBuilder) Join(table string) *JoinBuilder {
 	return j
 }
 
+// Using adds a using clause to the builder's query
+func (j *JoinBuilder) Using(field string) *JoinBuilder {
+	j.s.query += " USING " + field
+	return j
+}
+
 //On adds the matching colmuns in joined tables.
 func (j *JoinBuilder) On(column1 string, column2 string) *JoinBuilder {
 	j.s.query += " ON " + column1 + "=" + column2
