@@ -55,14 +55,14 @@ func (i *InsertBuilder) ValuesSet(ixToValues map[int]interface{}) *InsertBuilder
 	return i
 }
 
-//ReturnFromInserted selects fields from the temporary inserted table
-func (i *InsertBuilder) ReturnFromInserted(fields ...string) *InsertBuilder {
+//Returning selects fields from the temporary inserted table
+func (i *InsertBuilder) Returning(fields ...string) *InsertBuilder {
 	i.query += " RETURNING" + addFields("", false, toInterface(fields...)...)
 	return i
 }
 
-//ReturnAllFromInserted selects all fields from the temporary inserted table
-func (i *InsertBuilder) ReturnAllFromInserted() *InsertBuilder {
+//ReturningAll selects all fields from the temporary inserted table
+func (i *InsertBuilder) ReturningAll() *InsertBuilder {
 	i.query += " RETURNING *"
 	return i
 }

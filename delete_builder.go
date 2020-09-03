@@ -39,14 +39,14 @@ func (d *DeleteBuilder) WhereFieldIn(field string, values ...interface{}) *Delet
 	return d
 }
 
-//ReturnFromInserted returns the specified field values
-func (d *DeleteBuilder) ReturnFromInserted(fields ...string) *DeleteBuilder {
+//Returning returns the specified field values
+func (d *DeleteBuilder) Returning(fields ...string) *DeleteBuilder {
 	d.query += " RETURNING" + addFields("", false, toInterface(fields...)...)
 	return d
 }
 
-//ReturnAllFromInserted returns all fields
-func (d *DeleteBuilder) ReturnAllFromInserted() *DeleteBuilder {
+//ReturningAll returns all fields
+func (d *DeleteBuilder) ReturningAll() *DeleteBuilder {
 	d.query += " RETURNING *"
 	return d
 }
