@@ -76,6 +76,7 @@ func (u *UpdateBuilder) ReturningAll() *UpdateBuilder {
 	return u
 }
 
+// TODO: update docs & examples
 //And is an alternative to WhereWithMap
 //
 //it adds an AND along with the condition specified
