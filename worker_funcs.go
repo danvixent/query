@@ -12,6 +12,10 @@ const noquote = 0
 //if parenthesize is true, each value in mapper is parenthesized before
 //adding it to qry, prefix allows for different statements(like WHERE or VALUES) to be specified
 func withMap(prefix string, mapper map[int]interface{}, parenthesize bool) string {
+	if mapper == nil {
+		return ""
+	}
+
 	qry := ""
 	if prefix == "," {
 		qry = prefix
@@ -54,6 +58,10 @@ func withMap(prefix string, mapper map[int]interface{}, parenthesize bool) strin
 // will remain
 // mapper only supports pointers to int,uint types and the string data type.
 func concactValues(mapper map[int]interface{}) map[int]interface{} {
+	if mapper == nil {
+		return nil
+	}
+
 	qry := ""
 	keys := make([]int, 0, len(mapper))
 	for k := range mapper {
@@ -76,6 +84,10 @@ func concactValues(mapper map[int]interface{}) map[int]interface{} {
 //whereIn adds a WHERE clause along with IN keyword with values derived from
 //the values parameter
 func whereIn(field string, values ...interface{}) string {
+	if values == nil {
+		return ""
+	}
+
 	qry := " WHERE " + field + " IN("
 	l := len(values) - 1
 	for ix, v := range values {
@@ -92,6 +104,10 @@ func whereIn(field string, values ...interface{}) string {
 //addFields adds the values in fields to qry
 //if  parenthesize is true prefix isn't added
 func addFields(prefix string, parenthesize bool, fields ...interface{}) string {
+	if fields == nil {
+		return ""
+	}
+
 	l := len(fields) - 1
 	if parenthesize {
 		qry := " ("
@@ -145,6 +161,10 @@ func or(cond string) string {
 }
 
 func toInterface(values ...string) []interface{} {
+	if values == nil {
+		return nil
+	}
+
 	v := make([]interface{}, 0, len(values))
 	for i := range values {
 		v = append(v, &values[i])
@@ -160,6 +180,10 @@ type Stringer interface {
 //stringify converts any *int,*uint type to its string equivalent
 //if a non-pointer type is passed, an empty string is returned
 func stringify(i interface{}, quote bool) string {
+	if i == nil {
+		return ""
+	}
+
 	switch i.(type) {
 	case *int32:
 		return strconv.FormatInt(int64(*i.(*int32)), 10)
