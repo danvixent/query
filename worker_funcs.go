@@ -172,8 +172,8 @@ func toInterface(values ...string) []interface{} {
 	return v
 }
 
-// Stringer allows us to avoid importing fmt
-type Stringer interface {
+// stringer allows us to avoid importing fmt
+type stringer interface {
 	String() string
 }
 
@@ -199,8 +199,8 @@ func stringify(i interface{}, quote bool) string {
 			return "'" + s + "'"
 		}
 		return s
-	case Stringer:
-		return i.(Stringer).String()
+	case stringer:
+		return i.(stringer).String()
 	case *int:
 		return strconv.Itoa(*i.(*int))
 	case int:
