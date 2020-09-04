@@ -36,6 +36,16 @@ func Or(v string) string {
 	return "OR " + v
 }
 
+// IsNull adds " IS NULL" to v and returns the resutl
+func IsNull(v string) string {
+	return v + " IS NULL"
+}
+
+// IsNotNull adds " IS NOT NULL" to v and returns the resutl
+func IsNotNull(v string) string {
+	return v + " IS NOT NULL"
+}
+
 // And prepends AND to v
 // this is only intended use with WhereWithMap
 func And(v string) string {
