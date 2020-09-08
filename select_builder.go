@@ -68,14 +68,14 @@ func (s *SelectBuilder) And(condition string) *SelectBuilder {
 }
 
 //Offset  adds AN OFFSET clause to the query
-func (s *SelectBuilder) Offset(num *int32) *SelectBuilder {
-	s.query += *offset(num)
+func (s *SelectBuilder) Offset(num int) *SelectBuilder {
+	s.query += offset(num)
 	return s
 }
 
 //Limit adds a LIMIT clause to the query
-func (s *SelectBuilder) Limit(num *int32) *SelectBuilder {
-	s.query += *limit(num)
+func (s *SelectBuilder) Limit(num int) *SelectBuilder {
+	s.query += limit(num)
 	return s
 }
 

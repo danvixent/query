@@ -135,14 +135,12 @@ func addFields(prefix string, parenthesize bool, fields ...interface{}) string {
 
 //offset adds an OFFSET clause,
 //only if num is a number
-func offset(num *int32) *string {
-	qry := " OFFSET " + strconv.FormatInt(int64(*num), 10)
-	return &qry
+func offset(num int) string {
+	return " OFFSET " + strconv.Itoa(num)
 }
 
-func limit(num *int32) *string {
-	qry := " LIMIT " + strconv.FormatInt(int64(*num), 10)
-	return &qry
+func limit(num int) string {
+	return " LIMIT " + strconv.Itoa(num)
 }
 
 func where(cond string) string {
@@ -151,13 +149,11 @@ func where(cond string) string {
 }
 
 func and(cond string) string {
-	qry := " AND " + cond
-	return qry
+	return " AND " + cond
 }
 
 func or(cond string) string {
-	qry := " OR " + cond
-	return qry
+	return " OR " + cond
 }
 
 func toInterface(values ...string) []interface{} {
