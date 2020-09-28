@@ -12,7 +12,7 @@ func NewSelectBuilder() *SelectBuilder {
 
 //Select adds a select statement to the builder's query
 func (s *SelectBuilder) Select(fields ...string) *SelectBuilder {
-	s.query = addFields("SELECT", false, toInterface(fields...)...)
+	s.query = addFieldsString("SELECT", false, fields...)
 	return s
 }
 
@@ -113,7 +113,7 @@ func (s *SelectBuilder) Desc() *SelectBuilder {
 
 //Distinct adds a DISTINCT clause the builder's query
 func (s *SelectBuilder) Distinct(fields ...string) *SelectBuilder {
-	s.query += addFields("DISTINCT", false, toInterface(fields...)...)
+	s.query += addFieldsString("DISTINCT", false, fields...)
 	return s
 }
 
@@ -123,5 +123,5 @@ func (s *SelectBuilder) Clear() {
 }
 
 func (s *SelectBuilder) String() string {
-	return s.query
+	return s.query + ";"
 }

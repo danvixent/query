@@ -41,7 +41,7 @@ func (d *DeleteBuilder) WhereFieldIn(field string, values ...interface{}) *Delet
 
 //Returning returns the specified field values
 func (d *DeleteBuilder) Returning(fields ...string) *DeleteBuilder {
-	d.query += " RETURNING" + addFields("", false, toInterface(fields...)...)
+	d.query += " RETURNING" + addFieldsString("", false, fields...)
 	return d
 }
 
@@ -73,5 +73,5 @@ func (d *DeleteBuilder) Clear() {
 }
 
 func (d *DeleteBuilder) String() string {
-	return d.query
+	return d.query + ";"
 }

@@ -133,6 +133,31 @@ func addFields(prefix string, parenthesize bool, fields ...interface{}) string {
 	return qry
 }
 
+func addFieldsString(prefix string, parenthesize bool, fields ...string) string {
+	qry := prefix + " "
+	if parenthesize {
+		qry += "("
+		for i, field := range fields {
+			if i == len(fields)-1 {
+				qry += field
+				break
+			}
+			qry += field + ","
+		}
+		qry += ")"
+		return qry
+	}
+
+	for i, field := range fields {
+		if i == len(fields)-1 {
+			qry += field
+			break
+		}
+		qry += field + ","
+	}
+	return qry
+}
+
 //offset adds an OFFSET clause,
 //only if num is a number
 func offset(num int) string {
