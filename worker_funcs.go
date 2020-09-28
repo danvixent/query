@@ -108,9 +108,10 @@ func addFields(prefix string, parenthesize bool, fields ...interface{}) string {
 		return ""
 	}
 
+	qry := prefix + " "
 	l := len(fields) - 1
 	if parenthesize {
-		qry := " ("
+		qry += "("
 		for i, v := range fields {
 			if i == l {
 				qry += stringify(v, false)
@@ -122,7 +123,6 @@ func addFields(prefix string, parenthesize bool, fields ...interface{}) string {
 		return qry
 	}
 
-	qry := prefix + " "
 	for i, v := range fields {
 		if i == l {
 			qry += stringify(v, false)
