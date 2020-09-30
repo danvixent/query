@@ -14,34 +14,34 @@ func TestUpdateBuilder_Update(t *testing.T) {
 		{
 			"update1",
 			"UPDATE Stock.Product SET ProductName='Powersuper Battery' WHERE ProductID=99;",
-			NewUpdateBuilder().Update("Stock.Product").Set("ProductName='Powersuper Battery'").Where("ProductID=99").String,
+			NewUpdateBuilder().Update("Stock.Product").Set(Eq("ProductName", "Powersuper Battery")).Where(Eq("ProductID", 99)).String,
 		},
 		{
 			"update2",
 			"UPDATE Stock.ProductBarCodes SET Barcode='4353532242' WHERE BarcodeID=2;",
-			NewUpdateBuilder().Update("Stock.ProductBarCodes").Set("Barcode='4353532242'").Where("BarcodeID=2").String,
+			NewUpdateBuilder().Update("Stock.ProductBarCodes").Set(Eq("Barcode", "4353532242")).Where(Eq("BarcodeID", 2)).String,
 		},
 		{
 			"update3",
 			"UPDATE Stock.Product SET ProductName='Pakgen Bulbs' WHERE CategoryID=3 OR BarcodeID=22;",
-			NewUpdateBuilder().Update("Stock.Product").Set("ProductName='Pakgen Bulbs'").
+			NewUpdateBuilder().Update("Stock.Product").Set(Eq("ProductName", "Pakgen Bulbs")).
 				WhereWithMap(map[int]interface{}{
-					0: "CategoryID=3 OR",
-					1: "BarcodeID=22",
+					0: Eq("CategoryID", 3),
+					1: Or(Eq("BarcodeID", 22)),
 				}).String,
 		},
 		{
 			"update4",
 			"UPDATE Person.Contact SET FirstName='Daniel' LastName='Jamie' WHERE ContactID=1;",
 			NewUpdateBuilder().Update("Person.Contact").SetFromMap(map[int]interface{}{
-				0: "FirstName='Daniel'",
-				1: "LastName='Jamie'",
-			}).Where("ContactID=1").String,
+				0: Eq("FirstName", "Daniel"),
+				1: Eq("LastName", "Jamie"),
+			}).Where(Eq("ContactID", 1)).String,
 		},
 		{
 			"update5",
 			"UPDATE Sales.OrderDetail SET OrderDetailID=33 WHERE ProductID=3 AND Quantity=400 OR UnitPrice=300;",
-			NewUpdateBuilder().Update("Sales.OrderDetail").Set("OrderDetailID=33").Where("ProductID=3").And("Quantity=400").Or("UnitPrice=300").String,
+			NewUpdateBuilder().Update("Sales.OrderDetail").Set(Eq("OrderDetailID", 33)).Where(Eq("ProductID", 3)).And(Eq("Quantity", 400)).Or(Eq("UnitPrice", 300)).String,
 		},
 	}
 	for _, tt := range tests {
@@ -72,18 +72,18 @@ func TestSelectBuilder_Select(t *testing.T) {
 		},
 		{
 			"select3",
-			"SELECT OrderID,StoreID,OrderDate,DueDate,TotalAmountDue,PaymentDate,PaymentMethodID FROM Sales.OrderHeader WHERE OrderID>2 AND StoreID<=100 AND DueDate!=11/02/2020;",
+			"SELECT OrderID,StoreID,OrderDate,DueDate,TotalAmountDue,PaymentDate,PaymentMethodID FROM Sales.OrderHeader WHERE OrderID>2 AND StoreID<=100 AND DueDate!='11/02/2020';",
 			NewSelectBuilder().Select("OrderID", "StoreID", "OrderDate", "DueDate", "TotalAmountDue", "PaymentDate", "PaymentMethodID").
 				From("Sales.OrderHeader").WhereWithMap(map[int]interface{}{
-				0: "OrderID>2 AND",
-				1: "StoreID<=100 AND",
-				2: "DueDate!=11/02/2020",
+				0: G("OrderID", 2),
+				1: And(LEq("StoreID", 100)),
+				2: And(NEq("DueDate", "11/02/2020")),
 			}).String,
 		},
 		{
 			"select4",
 			"SELECT * FROM Person.Contact WHERE ContactID>3 AND AddressID=33 OR FirstName='Kelly';",
-			NewSelectBuilder().SelectAll("Person.Contact").Where("ContactID>3").And("AddressID=33").Or("FirstName='Kelly'").String,
+			NewSelectBuilder().SelectAll("Person.Contact").Where(G("ContactID", 3)).And(Eq("AddressID", 33)).Or(Eq("FirstName", "Kelly")).String,
 		},
 		{
 			"select5",
@@ -108,15 +108,15 @@ func TestJoinBuilder_Join(t *testing.T) {
 	}{
 		{
 			"join1",
-			"SELECT soh.OrderID,ss.StoreName,soh.OrderDate,soh.TotalAmountDue,soh.DeliveryDate,soh.PaymentDate,mpm.PaymentMethod FROM Sales.OrderHeader AS soh JOIN Sales.Store AS ss ON soh.StoreID=ss.StoreID JOIN Management.PaymentMethods AS mpm ON soh.PaymentMethodID=mpm.PaymentMethodID WHERE soh.TotalAmountDue>10000 AND soh.OrderID>22 AND mpm.PaymentMethod=Cash ORDER BY soh.OrderID;",
+			"SELECT soh.OrderID,ss.StoreName,soh.OrderDate,soh.TotalAmountDue,soh.DeliveryDate,soh.PaymentDate,mpm.PaymentMethod FROM Sales.OrderHeader AS soh JOIN Sales.Store AS ss ON soh.StoreID=ss.StoreID JOIN Management.PaymentMethods AS mpm ON soh.PaymentMethodID=mpm.PaymentMethodID WHERE soh.TotalAmountDue>10000 AND soh.OrderID>22 AND mpm.PaymentMethod='Cash' ORDER BY soh.OrderID;",
 			NewJoinBuilder().
 				Select("soh.OrderID", "ss.StoreName", "soh.OrderDate", "soh.TotalAmountDue", "soh.DeliveryDate", "soh.PaymentDate", "mpm.PaymentMethod").
 				From("Sales.OrderHeader").As("soh").Join("Sales.Store").As("ss").On("soh.StoreID", "ss.StoreID").
 				Join("Management.PaymentMethods").As("mpm").On("soh.PaymentMethodID", "mpm.PaymentMethodID").
 				WhereWithMap(map[int]interface{}{
-					0: "soh.TotalAmountDue>10000 AND",
-					1: "soh.OrderID>22 AND",
-					2: "mpm.PaymentMethod=Cash",
+					0: G("soh.TotalAmountDue", 10000),
+					1: And(G("soh.OrderID", 22)),
+					2: And(Eq("mpm.PaymentMethod", "Cash")),
 				}).OrderBy("soh.OrderID").String,
 		},
 		{
@@ -124,7 +124,7 @@ func TestJoinBuilder_Join(t *testing.T) {
 			"SELECT pc.FirstName,pc.LastName,pc.PhoneNumber,pc.Email FROM Purchasing.Supplier AS ps JOIN Person.Contact AS pc ON ps.ContactID=pc.ContactID WHERE pc.FirstName='Boluwatife' AND pc.LastName='Oyeniran' ORDER BY pc.FirstName;",
 			NewJoinBuilder().
 				Select("pc.FirstName", "pc.LastName", "pc.PhoneNumber", "pc.Email").From("Purchasing.Supplier").As("ps").
-				Join("Person.Contact").As("pc").On("ps.ContactID", "pc.ContactID").Where("pc.FirstName='Boluwatife'").And("pc.LastName='Oyeniran'").OrderBy("pc.FirstName").String,
+				Join("Person.Contact").As("pc").On("ps.ContactID", "pc.ContactID").Where(Eq("pc.FirstName", "Boluwatife")).And(Eq("pc.LastName", "Oyeniran")).OrderBy("pc.FirstName").String,
 		},
 		{
 			"join3",
@@ -134,7 +134,7 @@ func TestJoinBuilder_Join(t *testing.T) {
 		{
 			"join4",
 			"SELECT * FROM Sales.OrderDetail WHERE OrderID>100 OR TotalAmountDue>90000;",
-			NewJoinBuilder().SelectAll("Sales.OrderDetail").Where("OrderID>100").Or("TotalAmountDue>90000").String,
+			NewJoinBuilder().SelectAll("Sales.OrderDetail").Where(G("OrderID", 100)).Or(G("TotalAmountDue", 90000)).String,
 		},
 		{
 			"join5",
@@ -205,8 +205,8 @@ func TestDeleteBuilder_Delete(t *testing.T) {
 		},
 		{
 			"delete3",
-			"DELETE FROM Sales.OrderDetail WHERE OrderID>100 OR TotalAmountDue>90000 AND DueDate=10/11/2020;",
-			NewDeleteBuilder().Delete("Sales.OrderDetail").Where("OrderID>100").Or("TotalAmountDue>90000").And("DueDate=10/11/2020").String,
+			"DELETE FROM Sales.OrderDetail WHERE OrderID>100 OR TotalAmountDue>90000 AND DueDate='10/11/2020';",
+			NewDeleteBuilder().Delete("Sales.OrderDetail").Where(G("OrderID", 100)).Or(G("TotalAmountDue", 90000)).And(Eq("DueDate", "10/11/2020")).String,
 		},
 	}
 	for _, tt := range tests {
@@ -342,7 +342,7 @@ func BenchmarkInsertBuilder_Insert(b *testing.B) {
 		r2 = rand.Intn(5)
 		result = NewInsertBuilder().Insert(tables[r1]).Fields(fields[r2]...).
 			ValuesFromMap(whereVars[r1]).ValuesSet(whereVars[r2]).
-			Returning(fields[r2]...).ReturningAll().Values(fieldIn[r2]...)
+			Returning(fields[r2]...).ReturningAll()
 
 	}
 	result.Clear()
