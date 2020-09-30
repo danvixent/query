@@ -314,7 +314,7 @@ func BenchmarkSelectBuilder_Select(b *testing.B) {
 		r2 := rand.Intn(5)
 		result = NewSelectBuilder().Select(fields[r1]...).From(tables[r1]).WhereWithMap(whereVars[r1]).
 			And(andVars[r2]).Or(andVars[r2]).Distinct(fields[r2]...).Asc().Desc().GroupBy(andVars[r1]).SelectAll(tables[r2]).
-			WhereFieldIn(fields[r1][r2], toInterface(fields[r2]...)...)
+			WhereFieldIn(fields[r1][r2], fieldIn[r2]...)
 	}
 	result.Clear()
 }
