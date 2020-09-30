@@ -32,23 +32,21 @@ func withMap(prefix string, mapper map[int]interface{}, parenthesize bool) strin
 
 	if parenthesize {
 		for ix, key := range keys {
-			v := mapper[key]
 			if ix == l {
-				qry += "(" + noQuoteStringify(v) + ")"
+				qry += "(" + noQuoteStringify(mapper[key]) + ")"
 				break
 			}
-			qry += "(" + noQuoteStringify(v) + "),"
+			qry += "(" + noQuoteStringify(mapper[key]) + "),"
 		}
 		return qry
 	}
 
 	for ix, key := range keys {
-		v := mapper[key]
 		if ix == l {
-			qry += " " + noQuoteStringify(v)
+			qry += " " + noQuoteStringify(mapper[key])
 			break
 		}
-		qry += " " + noQuoteStringify(v)
+		qry += " " + noQuoteStringify(mapper[key])
 	}
 	return qry
 }
@@ -72,12 +70,11 @@ func concactValues(mapper map[int]interface{}) map[int]interface{} {
 	l := len(keys) - 1
 
 	for ix, key := range keys {
-		v := mapper[key]
 		if ix == l {
-			qry += quoteStringify(v)
+			qry += quoteStringify(mapper[key])
 			break
 		}
-		qry += quoteStringify(v) + ","
+		qry += quoteStringify(mapper[key]) + ","
 	}
 	return map[int]interface{}{0: qry}
 }
@@ -102,39 +99,7 @@ func whereIn(field string, values ...interface{}) string {
 	return qry
 }
 
-//addFields adds the values in fields to qry
-//if  parenthesize is true prefix isn't added
-func addFields(prefix string, parenthesize bool, fields ...interface{}) string {
-	if fields == nil {
-		return ""
-	}
-
-	qry := prefix + " "
-	l := len(fields) - 1
-	if parenthesize {
-		qry += "("
-		for i, v := range fields {
-			if i == l {
-				qry += noQuoteStringify(v)
-				break
-			}
-			qry += noQuoteStringify(v) + ","
-		}
-		qry += ")"
-		return qry
-	}
-
-	for i, v := range fields {
-		if i == l {
-			qry += noQuoteStringify(v)
-			break
-		}
-		qry += noQuoteStringify(v) + ","
-	}
-	return qry
-}
-
-func addFieldsString(prefix string, parenthesize bool, fields ...string) string {
+func addFields(prefix string, parenthesize bool, fields ...string) string {
 	qry := prefix + " "
 	if parenthesize {
 		qry += "("
@@ -188,46 +153,43 @@ type stringer interface {
 }
 
 func noQuoteStringify(i interface{}) string {
-	switch i.(type) {
-	case stringer:
-		return "'" + i.(stringer).String() + "'"
-	}
-
 	v := reflect.ValueOf(i)
 	switch v.Kind() {
 	case reflect.Ptr:
-		return tostr(v.Elem())
-	case reflect.String:
-		return v.String()
-	default:
-		return tostr(v)
-	}
-}
-
-func tostr(v reflect.Value) string {
-	switch v.Kind() {
+		return noQuoteStringify(v.Elem())
 	case reflect.Int, reflect.Int16, reflect.Int8, reflect.Int32, reflect.Int64:
 		return strconv.FormatInt(v.Int(), 10)
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		return strconv.FormatUint(v.Uint(), 10)
-	default:
-		return ""
+	case reflect.String:
+		return v.String()
 	}
+
+	switch i.(type) {
+	case stringer:
+		return i.(stringer).String()
+	}
+
+	return ""
 }
 
 func quoteStringify(i interface{}) string {
+	v := reflect.ValueOf(i)
+	switch v.Kind() {
+	case reflect.Ptr:
+		return quoteStringify(v.Elem())
+	case reflect.Int, reflect.Int16, reflect.Int8, reflect.Int32, reflect.Int64:
+		return strconv.FormatInt(v.Int(), 10)
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return strconv.FormatUint(v.Uint(), 10)
+	case reflect.String:
+		return "'" + v.String() + "'"
+	}
+
 	switch i.(type) {
 	case stringer:
 		return "'" + i.(stringer).String() + "'"
 	}
 
-	v := reflect.ValueOf(i)
-	switch v.Kind() {
-	case reflect.Ptr:
-		return tostr(v.Elem())
-	case reflect.String:
-		return "'" + v.String() + "'"
-	default:
-		return tostr(v)
-	}
+	return ""
 }
