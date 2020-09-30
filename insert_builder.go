@@ -18,14 +18,7 @@ func (i *InsertBuilder) Insert(table string) *InsertBuilder {
 
 //Fields adds the fields to be inserted to the builder's query
 func (i *InsertBuilder) Fields(fields ...string) *InsertBuilder {
-	i.query += addFieldsString("", true, fields...)
-	return i
-}
-
-//Values adds a set of values for each corresponding column to the builder's query.
-//Any value for a string colmun should be wrapped in single quotes.
-func (i *InsertBuilder) Values(values ...interface{}) *InsertBuilder {
-	i.query += addFields("VALUES", true, values...)
+	i.query += addFields("", true, fields...)
 	return i
 }
 
@@ -57,7 +50,7 @@ func (i *InsertBuilder) ValuesSet(ixToValues map[int]interface{}) *InsertBuilder
 
 //Returning selects fields from the temporary inserted table
 func (i *InsertBuilder) Returning(fields ...string) *InsertBuilder {
-	i.query += " RETURNING" + addFieldsString("", false, fields...)
+	i.query += " RETURNING" + addFields("", false, fields...)
 	return i
 }
 

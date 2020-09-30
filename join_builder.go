@@ -22,7 +22,7 @@ func (j *JoinBuilder) Join(table string) *JoinBuilder {
 
 // Using adds a using clause to the builder's query
 func (j *JoinBuilder) Using(fields ...string) *JoinBuilder {
-	j.s.query += addFieldsString(" USING", true, fields...)
+	j.s.query += addFields(" USING", true, fields...)
 	return j
 }
 
