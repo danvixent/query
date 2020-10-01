@@ -39,6 +39,13 @@ func (i *InsertBuilder) ValuesFromMap(ixToValues map[int]interface{}) *InsertBui
 	return i
 }
 
+//Values adds a set of values for each corresponding column to the builder's query.
+//Any value for a string colmun should be wrapped in single quotes.
+func (i *InsertBuilder) Values(values ...string) *InsertBuilder {
+	i.query += addFields("VALUES", true, values...)
+	return i
+}
+
 // ValuesSet adds another value set without adding the VALUES keyword
 //
 // Note that string values in ixToValues beginning with '(' won't be quoted
