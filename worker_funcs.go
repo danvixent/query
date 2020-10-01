@@ -101,39 +101,7 @@ func whereIn(field string, values ...interface{}) string {
 	return qry
 }
 
-//addFields adds the values in fields to qry
-//if  parenthesize is true prefix isn't added
-func addFields(prefix string, parenthesize bool, fields ...interface{}) string {
-	if fields == nil {
-		return ""
-	}
-
-	qry := prefix + " "
-	l := len(fields) - 1
-	if parenthesize {
-		qry += "("
-		for i, v := range fields {
-			if i == l {
-				qry += stringify(v, false)
-				break
-			}
-			qry += stringify(v, false) + ","
-		}
-		qry += ")"
-		return qry
-	}
-
-	for i, v := range fields {
-		if i == l {
-			qry += stringify(v, false)
-			break
-		}
-		qry += stringify(v, false) + ","
-	}
-	return qry
-}
-
-func addFieldsString(prefix string, parenthesize bool, fields ...string) string {
+func addFields(prefix string, parenthesize bool, fields ...string) string {
 	qry := prefix + " "
 	if parenthesize {
 		qry += "("
@@ -179,18 +147,6 @@ func and(cond string) string {
 
 func or(cond string) string {
 	return " OR " + cond
-}
-
-func toInterface(values ...string) []interface{} {
-	if values == nil {
-		return nil
-	}
-
-	v := make([]interface{}, 0, len(values))
-	for i := range values {
-		v = append(v, &values[i])
-	}
-	return v
 }
 
 // stringer allows us to avoid importing fmt
