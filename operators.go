@@ -2,32 +2,32 @@ package query
 
 // Eq equates a f to v
 func Eq(f string, v interface{}) string {
-	return f + "=" + quoteStringify(v)
+	return f + "=" + stringify(v, true)
 }
 
 // Eq add != in-between f and v
 func NEq(f string, v interface{}) string {
-	return f + "!=" + quoteStringify(v)
+	return f + "!=" + stringify(v, true)
 }
 
 // G add > in-between f & v
 func G(f string, v interface{}) string {
-	return f + ">" + quoteStringify(v)
+	return f + ">" + stringify(v, true)
 }
 
 // L adds < in-between f & v
 func L(f string, v interface{}) string {
-	return f + "<" + quoteStringify(v)
+	return f + "<" + stringify(v, true)
 }
 
 // GEq adds >= in-between f & v
 func GEq(f string, v interface{}) string {
-	return f + ">=" + quoteStringify(v)
+	return f + ">=" + stringify(v, true)
 }
 
 // LEq adds <= in-between f & v
 func LEq(f string, v interface{}) string {
-	return f + "<=" + quoteStringify(v)
+	return f + "<=" + stringify(v, true)
 }
 
 // SubQry equates f to a subquery
