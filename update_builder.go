@@ -66,7 +66,7 @@ func (u *UpdateBuilder) WhereWithMap(ixToCond map[int]interface{}) *UpdateBuilde
 
 //Returning selects fields from the temporary inserted table
 func (u *UpdateBuilder) Returning(fields ...string) *UpdateBuilder {
-	u.query += " RETURNING" + addFields("", false, fields...)
+	u.query += " RETURNING" + addFieldsString("", false, fields...)
 	return u
 }
 
