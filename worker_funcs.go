@@ -31,23 +31,21 @@ func withMap(prefix string, mapper map[int]interface{}, parenthesize bool) strin
 
 	if parenthesize {
 		for ix, key := range keys {
-			v := mapper[key]
 			if ix == l {
-				qry += "(" + stringify(v, false) + ")"
+				qry += "(" + stringify(mapper[key], false) + ")"
 				break
 			}
-			qry += "(" + stringify(v, false) + "),"
+			qry += "(" + stringify(mapper[key], false) + "),"
 		}
 		return qry
 	}
 
 	for ix, key := range keys {
-		v := mapper[key]
 		if ix == l {
-			qry += " " + stringify(v, false)
+			qry += " " + stringify(mapper[key], false)
 			break
 		}
-		qry += " " + stringify(v, false)
+		qry += " " + stringify(mapper[key], false)
 	}
 	return qry
 }
@@ -71,12 +69,11 @@ func concactValues(mapper map[int]interface{}) map[int]interface{} {
 	l := len(keys) - 1
 
 	for ix, key := range keys {
-		v := mapper[key]
 		if ix == l {
-			qry += stringify(v, true)
+			qry += stringify(mapper[key], true)
 			break
 		}
-		qry += stringify(v, true) + ","
+		qry += stringify(mapper[key], true) + ","
 	}
 	return map[int]interface{}{0: qry}
 }
