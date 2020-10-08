@@ -1,12 +1,10 @@
 package query
 
 import (
+	"reflect"
 	"sort"
 	"strconv"
 )
-
-const quote = 1
-const noquote = 0
 
 //withMap returns a string composed of values from mapper
 //if parenthesize is true, each value in mapper is parenthesized before
@@ -32,20 +30,20 @@ func withMap(prefix string, mapper map[int]interface{}, parenthesize bool) strin
 	if parenthesize {
 		for ix, key := range keys {
 			if ix == l {
-				qry += "(" + stringify(mapper[key], false) + ")"
+				qry += "(" + stringifyNoQuote(mapper[key]) + ")"
 				break
 			}
-			qry += "(" + stringify(mapper[key], false) + "),"
+			qry += "(" + stringifyNoQuote(mapper[key]) + "),"
 		}
 		return qry
 	}
 
 	for ix, key := range keys {
 		if ix == l {
-			qry += " " + stringify(mapper[key], false)
+			qry += " " + stringifyNoQuote(mapper[key])
 			break
 		}
-		qry += " " + stringify(mapper[key], false)
+		qry += " " + stringifyNoQuote(mapper[key])
 	}
 	return qry
 }
@@ -70,10 +68,10 @@ func concactValues(mapper map[int]interface{}) map[int]interface{} {
 
 	for ix, key := range keys {
 		if ix == l {
-			qry += stringify(mapper[key], true)
+			qry += stringifyQuote(mapper[key])
 			break
 		}
-		qry += stringify(mapper[key], true) + ","
+		qry += stringifyQuote(mapper[key]) + ","
 	}
 	return map[int]interface{}{0: qry}
 }
@@ -89,10 +87,10 @@ func whereIn(field string, values ...interface{}) string {
 	l := len(values) - 1
 	for ix, v := range values {
 		if ix == l {
-			qry += stringify(v, true)
+			qry += stringifyQuote(v)
 			break
 		}
-		qry += stringify(v, true) + ","
+		qry += stringifyQuote(v) + ","
 	}
 	qry += ")"
 	return qry
@@ -151,68 +149,48 @@ type stringer interface {
 	String() string
 }
 
-//stringify converts any *int,*uint type to its string equivalent
-//if a non-pointer type is passed, an empty string is returned
-func stringify(i interface{}, quote bool) string {
-	if i == nil {
-		return ""
-	}
-
+func stringifyNoQuote(i interface{}) string {
 	switch i.(type) {
-	case *int32:
-		return strconv.FormatInt(int64(*i.(*int32)), 10)
-	case *string:
-		s := i.(*string)
-		if quote && !((*s)[0] == '(') {
-			return "'" + *s + "'"
-		}
-		return *s
 	case string:
-		s := i.(string)
-		if quote && !(s[0] == '(') {
-			return "'" + s + "'"
-		}
-		return s
+		return i.(string)
 	case stringer:
 		return i.(stringer).String()
-	case *int:
-		return strconv.Itoa(*i.(*int))
-	case int:
-		return strconv.Itoa(i.(int))
-	case *int64:
-		return strconv.FormatInt(*i.(*int64), 10)
-	case *int8:
-		return strconv.Itoa(int(*i.(*int8)))
-	case *int16:
-		return strconv.Itoa(int(*i.(*int16)))
-	case int64:
-		return strconv.FormatInt(i.(int64), 10)
-	case int8:
-		return strconv.Itoa(int(i.(int8)))
-	case int16:
-		return strconv.Itoa(int(i.(int16)))
-	case int32:
-		return strconv.FormatInt(int64(i.(int32)), 10)
-	case *uint:
-		return strconv.FormatUint(uint64(*i.(*uint)), 10)
-	case *uint8:
-		return strconv.FormatUint(uint64(*i.(*uint8)), 10)
-	case *uint16:
-		return strconv.FormatUint(uint64(*i.(*uint16)), 10)
-	case *uint32:
-		return strconv.FormatUint(uint64(*i.(*uint32)), 10)
-	case *uint64:
-		return strconv.FormatUint(uint64(*i.(*uint64)), 10)
-	case uint:
-		return strconv.FormatUint(uint64(i.(uint)), 10)
-	case uint8:
-		return strconv.FormatUint(uint64(i.(uint8)), 10)
-	case uint16:
-		return strconv.FormatUint(uint64(i.(uint16)), 10)
-	case uint32:
-		return strconv.FormatUint(uint64(i.(uint32)), 10)
-	case uint64:
-		return strconv.FormatUint(uint64(i.(uint64)), 10)
 	}
+
+	v := reflect.ValueOf(i)
+
+	switch v.Kind() {
+	case reflect.Ptr:
+		return stringifyNoQuote(v.Elem())
+
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return strconv.FormatUint(v.Uint(), 10)
+	case reflect.Int, reflect.Int8, reflect.Int32, reflect.Int64:
+		return strconv.FormatInt(v.Int(), 10)
+	}
+
+	return ""
+}
+
+func stringifyQuote(i interface{}) string {
+	switch i.(type) {
+	case string:
+		return "'" + i.(string) + "'"
+	case stringer:
+		return "'" + i.(stringer).String() + "'"
+	}
+
+	v := reflect.ValueOf(i)
+
+	switch v.Kind() {
+	case reflect.Ptr:
+		return stringifyQuote(v.Elem())
+
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return strconv.FormatUint(v.Uint(), 10)
+	case reflect.Int, reflect.Int8, reflect.Int32, reflect.Int64:
+		return strconv.FormatInt(v.Int(), 10)
+	}
+
 	return ""
 }
