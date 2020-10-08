@@ -48,14 +48,14 @@ func withMap(prefix string, mapper map[int]interface{}, parenthesize bool) strin
 	return qry
 }
 
-// concactValues mutates all values in mapper to a one string,
+// values mutates all values in mapper to a one string,
 // with commas seperating each value.
 // obsolete keys will be deleted and the only the first index
 // will remain
 // mapper only supports pointers to int,uint types and the string data type.
-func concactValues(mapper map[int]interface{}) map[int]interface{} {
+func values(mapper map[int]interface{}) string {
 	if mapper == nil {
-		return nil
+		return ""
 	}
 
 	qry := ""
@@ -73,7 +73,7 @@ func concactValues(mapper map[int]interface{}) map[int]interface{} {
 		}
 		qry += stringifyQuote(mapper[key]) + ","
 	}
-	return map[int]interface{}{0: qry}
+	return qry
 }
 
 //whereIn adds a WHERE clause along with IN keyword with values derived from

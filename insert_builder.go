@@ -35,7 +35,7 @@ func (i *InsertBuilder) Fields(fields ...string) *InsertBuilder {
 // Note that string values in ixToValues beginning with '(' won't be quoted
 // by this method,as they will be assumed to be subqueries.
 func (i *InsertBuilder) ValuesFromMap(ixToValues map[int]interface{}) *InsertBuilder {
-	i.query += withMap("VALUES", concactValues(ixToValues), true)
+	i.query += " VALUES(" + values(ixToValues) + ")"
 	return i
 }
 
@@ -51,7 +51,7 @@ func (i *InsertBuilder) Values(values ...string) *InsertBuilder {
 // Note that string values in ixToValues beginning with '(' won't be quoted
 // by this method, as they will be assumed to be subqueries.
 func (i *InsertBuilder) ValuesSet(ixToValues map[int]interface{}) *InsertBuilder {
-	i.query += withMap(",", concactValues(ixToValues), true)
+	i.query += ",(" + values(ixToValues) + ")"
 	return i
 }
 
