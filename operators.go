@@ -5,7 +5,7 @@ func Eq(f string, v interface{}) string {
 	return f + "=" + stringifyQuote(v)
 }
 
-// Eq add != in-between f and v
+// NEq add != in-between f and v
 func NEq(f string, v interface{}) string {
 	return f + "!=" + stringifyQuote(v)
 }
