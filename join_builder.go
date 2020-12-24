@@ -108,13 +108,13 @@ func (j *JoinBuilder) And(condition string) *JoinBuilder {
 }
 
 //Offset adds AN OFFSET clause to the query
-func (j *JoinBuilder) Offset(num int) *JoinBuilder {
+func (j *JoinBuilder) Offset(num uint64) *JoinBuilder {
 	j.s.Offset(num)
 	return j
 }
 
 //Limit adds a LIMIT clause to the query
-func (j *JoinBuilder) Limit(num int) *JoinBuilder {
+func (j *JoinBuilder) Limit(num uint64) *JoinBuilder {
 	j.s.Limit(num)
 	return j
 }
