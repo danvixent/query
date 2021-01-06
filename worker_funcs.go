@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"sort"
 	"strconv"
+	"time"
 )
 
 //withMap returns a string composed of values from mapper
@@ -155,6 +156,10 @@ func stringifyNoQuote(i interface{}) string {
 		return i.(string)
 	case stringer:
 		return i.(stringer).String()
+	case *time.Time:
+		return i.(*time.Time).Format(time.RFC3339)
+	case time.Time:
+		return i.(time.Time).Format(time.RFC3339)
 	}
 
 	v := reflect.ValueOf(i)
@@ -178,6 +183,10 @@ func stringifyQuote(i interface{}) string {
 		return "'" + i.(string) + "'"
 	case stringer:
 		return "'" + i.(stringer).String() + "'"
+	case *time.Time:
+		return i.(*time.Time).Format(time.RFC3339)
+	case time.Time:
+		return i.(time.Time).Format(time.RFC3339)
 	}
 
 	v := reflect.ValueOf(i)
