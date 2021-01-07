@@ -157,9 +157,9 @@ func stringifyNoQuote(i interface{}) string {
 	case *string:
 		return *i.(*string)
 	case *time.Time:
-		return i.(*time.Time).UTC().Format(time.RFC3339)
+		return "'" + i.(*time.Time).UTC().Format(time.RFC3339) + "'"
 	case time.Time:
-		return i.(time.Time).UTC().Format(time.RFC3339)
+		return "'" + i.(time.Time).UTC().Format(time.RFC3339) + "'"
 	case stringer:
 		return i.(stringer).String()
 	}
@@ -174,9 +174,9 @@ func stringifyQuote(i interface{}) string {
 	case *string:
 		return "'" + *i.(*string) + "'"
 	case *time.Time:
-		return i.(*time.Time).UTC().Format(time.RFC3339)
+		return "'" + i.(*time.Time).UTC().Format(time.RFC3339) + "'"
 	case time.Time:
-		return i.(time.Time).UTC().Format(time.RFC3339)
+		return "'" + i.(time.Time).UTC().Format(time.RFC3339) + "'"
 	case stringer:
 		return "'" + i.(stringer).String() + "'"
 	}
