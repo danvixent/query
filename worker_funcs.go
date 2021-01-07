@@ -154,6 +154,8 @@ func stringifyNoQuote(i interface{}) string {
 	switch i.(type) {
 	case string:
 		return i.(string)
+	case *string:
+		return *i.(*string)
 	case stringer:
 		return i.(stringer).String()
 	case *time.Time:
@@ -169,6 +171,8 @@ func stringifyQuote(i interface{}) string {
 	switch i.(type) {
 	case string:
 		return "'" + i.(string) + "'"
+	case *string:
+		return "'" + *i.(*string) + "'"
 	case stringer:
 		return "'" + i.(stringer).String() + "'"
 	case *time.Time:
