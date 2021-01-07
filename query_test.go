@@ -100,6 +100,8 @@ func TestSelectBuilder_Select(t *testing.T) {
 	}
 }
 
+var ui uint64 = 90000
+
 func TestJoinBuilder_Join(t *testing.T) {
 	tests := []struct {
 		name string
@@ -134,7 +136,7 @@ func TestJoinBuilder_Join(t *testing.T) {
 		{
 			"join4",
 			"SELECT * FROM Sales.OrderDetail WHERE OrderID>100 OR TotalAmountDue>90000;",
-			NewJoinBuilder().SelectAll("Sales.OrderDetail").Where(G("OrderID", 100)).Or(G("TotalAmountDue", 90000)).String,
+			NewJoinBuilder().SelectAll("Sales.OrderDetail").Where(G("OrderID", 100)).Or(G("TotalAmountDue", &ui)).String,
 		},
 		{
 			"join5",

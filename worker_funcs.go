@@ -178,6 +178,18 @@ func stringifyNoQuote(i interface{}) string {
 }
 
 func stringifyQuote(i interface{}) string {
+	v := reflect.ValueOf(i)
+
+	switch v.Kind() {
+	case reflect.Ptr, reflect.Interface:
+		v = v.Elem()
+		fallthrough
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return strconv.FormatUint(v.Uint(), 10)
+	case reflect.Int, reflect.Int8, reflect.Int32, reflect.Int64:
+		return strconv.FormatInt(v.Int(), 10)
+	}
+
 	switch i.(type) {
 	case string:
 		return "'" + i.(string) + "'"
@@ -187,18 +199,8 @@ func stringifyQuote(i interface{}) string {
 		return i.(*time.Time).Format(time.RFC3339)
 	case time.Time:
 		return i.(time.Time).Format(time.RFC3339)
-	}
-
-	v := reflect.ValueOf(i)
-
-	switch v.Kind() {
-	case reflect.Ptr:
-		return stringifyQuote(v.Elem())
-
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return strconv.FormatUint(v.Uint(), 10)
-	case reflect.Int, reflect.Int8, reflect.Int32, reflect.Int64:
-		return strconv.FormatInt(v.Int(), 10)
+		// case *uint64:
+		// 	return strconv.FormatUint((*i.(*uint64)), 10)
 	}
 
 	return ""
