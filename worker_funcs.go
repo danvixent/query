@@ -49,6 +49,29 @@ func withMap(prefix string, mapper map[int]interface{}, parenthesize bool) strin
 	return qry
 }
 
+func withSetMap(prefix string, mapper map[int]interface{}) string {
+	if mapper == nil {
+		return ""
+	}
+
+	qry := " SET "
+	keys := make([]int, 0, len(mapper))
+	for k := range mapper {
+		keys = append(keys, k)
+	}
+	sort.Ints(keys)
+	l := len(keys) - 1
+
+	for ix, key := range keys {
+		if ix == l {
+			qry += stringifyNoQuote(mapper[key])
+			break
+		}
+		qry += stringifyNoQuote(mapper[key]) + ","
+	}
+	return qry
+}
+
 // values mutates all values in mapper to a one string,
 // with commas seperating each value.
 // obsolete keys will be deleted and the only the first index

@@ -39,7 +39,7 @@ func (u *UpdateBuilder) Set(field string) *UpdateBuilder {
 // Note that string values in ixToValues beginning with '(' won't be quoted
 // by this method, as they will be assumed to be subqueries.
 func (u *UpdateBuilder) SetFromMap(ixToField map[int]interface{}) *UpdateBuilder {
-	u.query += withMap("SET", ixToField, false)
+	u.query += withSetMap("SET", ixToField)
 	return u
 }
 

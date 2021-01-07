@@ -32,7 +32,7 @@ func TestUpdateBuilder_Update(t *testing.T) {
 		},
 		{
 			"update4",
-			"UPDATE Person.Contact SET FirstName='Daniel' LastName='Jamie' WHERE ContactID=1;",
+			"UPDATE Person.Contact SET FirstName='Daniel',LastName='Jamie' WHERE ContactID=1;",
 			NewUpdateBuilder().Update("Person.Contact").SetFromMap(map[int]interface{}{
 				0: Eq("FirstName", "Daniel"),
 				1: Eq("LastName", "Jamie"),
