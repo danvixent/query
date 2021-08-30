@@ -1,2 +1,2 @@
 # query
-An SQL query builder package for Go.
+A SQL query builder package for Go.
